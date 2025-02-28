@@ -20,19 +20,37 @@ async function fetchMyPosts() {
             }
         });
 
-        const responseBody = await response.text();
-        console.log("📢 Raw response:", responseBody);
+        console.log("📢 Response Status:", response.status);
 
-        const data = JSON.parse(responseBody);
+        // Check if response is successful
+        if (!response.ok) {
+            console.error(`❌ Error: ${response.status} ${response.statusText}`);
+            alert(`Failed to fetch posts: ${response.statusText}`);
+            return;
+        }
+
+        // Read response as text (to debug issues)
+        const responseBody = await response.text();
+        console.log("📢 Raw Response:", responseBody);
+
+        let data;
+        try {
+            data = JSON.parse(responseBody);
+        } catch (jsonError) {
+            console.error("❌ JSON Parse Error:", jsonError);
+            alert("Invalid JSON response from server.");
+            return;
+        }
 
         if (!Array.isArray(data)) {
             console.error("❌ Unexpected response format:", data);
+            alert("Unexpected response from the server.");
             return;
         }
 
         // Display posts
         const myPostsList = document.getElementById("myPostsList");
-        myPostsList.innerHTML = "";
+        myPostsList.innerHTML = ""; // Clear previous content
 
         if (data.length === 0) {
             myPostsList.innerHTML = "<p>No posts found!</p>";
@@ -44,16 +62,20 @@ async function fetchMyPosts() {
             li.innerHTML = `
                 <h3>${post.title}</h3>
                 <p>${post.content}</p>
-                ${post.imageUrl ? `<img src="${post.imageUrl}" width="200">` : ""}
+                ${post.imageUrl ? `<img src="${post.imageUrl}" width="200" loading="lazy">` : ""}
                 <hr>
             `;
             myPostsList.appendChild(li);
         });
 
     } catch (error) {
-        console.error("❌ Error fetching my posts:", error);
+        console.error("❌ Network or API Error:", error);
+        alert("An error occurred while fetching posts.");
     }
 }
 
-// Fetch posts when the page loads
-window.onload = fetchMyPosts;
+// ✅ Ensure function runs after page fully loads
+window.onload = () => {
+    console.log("🚀 Page loaded, fetching posts...");
+    fetchMyPosts();
+};
