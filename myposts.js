@@ -4,12 +4,13 @@ async function fetchMyPosts() {
     const userId = localStorage.getItem("userId"); // Get user ID from local storage
 
     if (!userId) {
+        console.error("❌ User ID is missing in local storage!");
         alert("User not logged in");
         return;
     }
 
-    const requestUrl = `${apiUrl}/getMyPosts?userId=${userId}`;
-    console.log("Fetching posts from:", requestUrl); // ✅ Debugging log
+    const requestUrl = `${apiUrl}/getMyPosts?userId=${encodeURIComponent(userId)}`;
+    console.log("📢 Fetching posts from:", requestUrl);
 
     try {
         const response = await fetch(requestUrl, {
@@ -19,16 +20,17 @@ async function fetchMyPosts() {
             }
         });
 
-        const responseBody = await response.text(); // Read raw response
-        console.log("Raw response:", responseBody); // ✅ Debugging log
+        const responseBody = await response.text();
+        console.log("📢 Raw response:", responseBody);
 
-        const data = JSON.parse(responseBody); // Convert response body to JSON
+        const data = JSON.parse(responseBody);
 
         if (!Array.isArray(data)) {
-            console.error("Unexpected response format:", data);
+            console.error("❌ Unexpected response format:", data);
             return;
         }
 
+        // Display posts
         const myPostsList = document.getElementById("myPostsList");
         myPostsList.innerHTML = "";
 
@@ -49,7 +51,7 @@ async function fetchMyPosts() {
         });
 
     } catch (error) {
-        console.error("Error fetching my posts:", error);
+        console.error("❌ Error fetching my posts:", error);
     }
 }
 
