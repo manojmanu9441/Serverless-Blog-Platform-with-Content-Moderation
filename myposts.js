@@ -1,6 +1,5 @@
-const apiUrl = "https://x0t22jrakh.execute-api.us-east-1.amazonaws.com/Prod"; // API Gateway URL 
+const apiUrl = "https://x0t22jrakh.execute-api.us-east-1.amazonaws.com/Prod";
 
-// Function to fetch and display the current user's posts
 async function fetchMyPosts() {
     const userId = localStorage.getItem("userId"); // Get user ID from local storage
 
@@ -9,17 +8,31 @@ async function fetchMyPosts() {
         return;
     }
 
-    try {
-        const response = await fetch(`${apiUrl}/getMyPosts?userId=${userId}`);
-        const responseData = await response.json();
+    const requestUrl = `${apiUrl}/getMyPosts?userId=${userId}`;
+    console.log("Fetching posts from:", requestUrl); // ✅ Debugging log
 
-        // Ensure the response is parsed correctly
-        const data = typeof responseData === "string" ? JSON.parse(responseData) : responseData;
+    try {
+        const response = await fetch(requestUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const responseBody = await response.text(); // Read raw response
+        console.log("Raw response:", responseBody); // ✅ Debugging log
+
+        const data = JSON.parse(responseBody); // Convert response body to JSON
+
+        if (!Array.isArray(data)) {
+            console.error("Unexpected response format:", data);
+            return;
+        }
 
         const myPostsList = document.getElementById("myPostsList");
-        myPostsList.innerHTML = ""; // Clear old posts
+        myPostsList.innerHTML = "";
 
-        if (!Array.isArray(data) || data.length === 0) {
+        if (data.length === 0) {
             myPostsList.innerHTML = "<p>No posts found!</p>";
             return;
         }
