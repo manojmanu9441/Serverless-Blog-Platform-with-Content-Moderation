@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .switch {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .switch a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .switch a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Signup</h2>
+        <input type="text" id="signupUserId" placeholder="User ID" required>
+        <input type="email" id="signupEmail" placeholder="Email" required>
+        <input type="password" id="signupPassword" placeholder="Password" required>
+        <button onclick="signup()">Signup</button>
+        <div class="switch">
+            <a href="login.html">Already have an account? Login</a>
+        </div>
+    </div>
+
+    <script>
+       const apiUrl = 'https://x0t22jrakh.execute-api.us-east-1.amazonaws.com/Prod';
+
+       async function signup() {
+    const userId = document.getElementById('signupUserId').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+
+    try {
+        const response = await fetch(`${apiUrl}/INSERTDETAILS`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, email, password })
+        });
+
+        console.log("Raw Response:", response);
+
+        const responseData = await response.json();
+        console.log("Parsed Response:", responseData);
+
+        // Check if 'body' is a string and needs parsing
+        let data;
+        if (typeof responseData.body === "string") {
+            data = JSON.parse(responseData.body);
+        } else {
+            data = responseData;
+        }
+
+        console.log("Final Parsed Data:", data); // Log the final parsed data
+
+        if (data.success) {
+            alert('Signup successful!');
+            window.location.href = 'login.html';
+        } else {
+            alert('Signup failed: ' + (data.message || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error("Error during signup:", error);
+        alert('Signup failed: Network or server issue.');
+    }
+}
+
+
+    </script>
+</body>
+</html>

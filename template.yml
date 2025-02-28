@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for CodeDeploy using existing S3 bucket
+
+Parameters:
+  ExistingS3Bucket:
+    Type: String
+    Default: "www.manojconnects.space"
+    Description: "Existing S3 bucket to store deployment artifacts"
+
+Resources:
+  # IAM Role for CodeDeploy
+  CodeDeployServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CodeDeployServiceRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 
+                - codedeploy.amazonaws.com
+            Action: 
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: CodeDeployPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource: 
+                  - !Sub "arn:aws:s3:::${ExistingS3Bucket}"
+                  - !Sub "arn:aws:s3:::${ExistingS3Bucket}/*"
+              - Effect: Allow
+                Action:
+                  - ec2:Describe*
+                  - autoscaling:*
+                Resource: "*"
+
+  # Create a CodeDeploy Application
+  CodeDeployApplication:
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ApplicationName: MyCodeDeployApp
+      ComputePlatform: Server
+
+  # Create a CodeDeploy Deployment Group
+  CodeDeployDeploymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    Properties:
+      ApplicationName: !Ref CodeDeployApplication
+      DeploymentGroupName: MyDeploymentGroup
+      ServiceRoleArn: !GetAtt CodeDeployServiceRole.Arn
+      DeploymentConfigName: CodeDeployDefault.OneAtATime
+      AutoRollbackConfiguration:
+        Enabled: true
+        Events:
+          - DEPLOYMENT_FAILURE
+      DeploymentStyle:
+        DeploymentOption: WITH_TRAFFIC_CONTROL
+        DeploymentType: IN_PLACE
+      Ec2TagFilters:
+        - Key: Name
+          Value: CodeDeployInstance
+          Type: KEY_AND_VALUE
+
+Outputs:
+  CodeDeployAppName:
+    Description: "Name of the CodeDeploy application"
+    Value: !Ref CodeDeployApplication
+  DeploymentGroupName:
+    Description: "Name of the CodeDeploy deployment group"
+    Value: !Ref CodeDeployDeploymentGroup
+  ExistingBucket:
+    Description: "Using existing S3 bucket for deployment"
+    Value: !Ref ExistingS3Bucket

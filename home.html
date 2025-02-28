@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serverless Blog - Home</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+<body>
+    <header>
+        <h1>Create a New Blog</h1>
+        <button class="logout" onclick="logout()">Logout</button>
+    </header>
+    
+    <main>
+        <section class="blog-form">
+            <form id="postForm">
+                <input type="text" id="title" placeholder="Enter Blog Title" required>
+                <textarea id="content" placeholder="Write your blog content..." required></textarea>
+                <input type="file" id="imageUpload" accept="image/*">
+                <button type="submit">Upload Post</button>
+            </form>
+            <button class="show-posts" onclick="window.location.href='blogs.html'">Show Posts</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; AWS Serverless Blog App</p>
+    </footer>
+
+    <script src="home.js"></script>
+</body>
+</html>
