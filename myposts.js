@@ -1,4 +1,4 @@
-const apiUrl = "https://x0t22jrakh.execute-api.us-east-1.amazonaws.com/Prod"; // API Gateway URL
+const apiUrl = "https://x0t22jrakh.execute-api.us-east-1.amazonaws.com/Prod"; // API Gateway URL 
 
 // Function to fetch and display the current user's posts
 async function fetchMyPosts() {
@@ -11,12 +11,15 @@ async function fetchMyPosts() {
 
     try {
         const response = await fetch(`${apiUrl}/getMyPosts?userId=${userId}`);
-        const data = await response.json();
+        const responseData = await response.json();
+
+        // Ensure the response is parsed correctly
+        const data = typeof responseData === "string" ? JSON.parse(responseData) : responseData;
 
         const myPostsList = document.getElementById("myPostsList");
         myPostsList.innerHTML = ""; // Clear old posts
 
-        if (data.length === 0) {
+        if (!Array.isArray(data) || data.length === 0) {
             myPostsList.innerHTML = "<p>No posts found!</p>";
             return;
         }
