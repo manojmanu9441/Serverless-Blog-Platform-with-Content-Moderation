@@ -1,11 +1,12 @@
 const apiUrl = "https://x0t22jrakh.execute-api.us-east-1.amazonaws.com/Prod";
+
 async function fetchMyPosts() {
-    const userId = localStorage.getItem("userId");
+    const userId = localStorage.getItem("userId"); // Get user ID from local storage
 
     if (!userId) {
         console.error("❌ User ID is missing in local storage!");
         alert("User not logged in. Please log in to view your posts.");
-        window.location.href = "login.html";
+        window.location.href = "login.html"; // Redirect to login page
         return;
     }
 
@@ -22,17 +23,17 @@ async function fetchMyPosts() {
 
         console.log("📢 Response Status:", response.status);
 
+        // Check if response is successful
         if (!response.ok) {
             console.error(`❌ Error: ${response.status} ${response.statusText}`);
             alert(`Failed to fetch posts: ${response.statusText}`);
             return;
         }
 
-        // Parse response
-        const rawData = await response.json();
-        const data = JSON.parse(rawData.body); // ✅ Fix: Manually parsing body
+        // Parse response as JSON
+        const data = await response.json();
 
-        console.log("📢 API Response Data:", data);
+        console.log("📢 API Response Data:", data); // Debugging log
 
         if (!Array.isArray(data)) {
             console.error("❌ Unexpected response format:", data);
@@ -42,7 +43,7 @@ async function fetchMyPosts() {
 
         // Display posts
         const myPostsList = document.getElementById("myPostsList");
-        myPostsList.innerHTML = "";
+        myPostsList.innerHTML = ""; // Clear previous content
 
         if (data.length === 0) {
             myPostsList.innerHTML = "<p>No posts found!</p>";
@@ -65,3 +66,9 @@ async function fetchMyPosts() {
         alert("An error occurred while fetching posts.");
     }
 }
+
+// ✅ Ensure function runs after page fully loads
+window.onload = () => {
+    console.log("🚀 Page loaded, fetching posts...");
+    fetchMyPosts();
+};
