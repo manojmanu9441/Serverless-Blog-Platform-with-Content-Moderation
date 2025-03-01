@@ -1,27 +1,16 @@
 version: 0.0
 os: linux
 files:
-  # For AWSREKOGNITION function
   - source: /lambda/AWSREKOGNITION.zip
     destination: /tmp/deployment-folder/AWSREKOGNITION.zip
-
-  # For uploadBlog function
   - source: /lambda/uploadBlog.zip
     destination: /tmp/deployment-folder/uploadBlog.zip
-
-  # For getMyPosts function
   - source: /lambda/getMyPosts.zip
     destination: /tmp/deployment-folder/getMyPosts.zip
-
-  # For getBlogs function
   - source: /lambda/getBlogs.zip
     destination: /tmp/deployment-folder/getBlogs.zip
-
-  # For INSERTLOGIN function
   - source: /lambda/INSERTLOGIN.zip
     destination: /tmp/deployment-folder/INSERTLOGIN.zip
-
-  # For GETDETAILS function
   - source: /lambda/GETDETAILS.zip
     destination: /tmp/deployment-folder/GETDETAILS.zip
 
