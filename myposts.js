@@ -1,11 +1,13 @@
 const apiUrl = "https://x0t22jrakh.execute-api.us-east-1.amazonaws.com/Prod";
 
 async function fetchMyPosts() {
-    const userId = localStorage.getItem("userId"); // Get user ID from local storage
+    // Get user ID from local storage
+    const userId = localStorage.getItem("userId");
 
     if (!userId) {
         console.error("❌ User ID is missing in local storage!");
-        alert("User not logged in");
+        alert("User not logged in. Please log in to view your posts.");
+        window.location.href = "login.html"; // Redirect to login page
         return;
     }
 
@@ -29,18 +31,8 @@ async function fetchMyPosts() {
             return;
         }
 
-        // Read response as text (to debug issues)
-        const responseBody = await response.text();
-        console.log("📢 Raw Response:", responseBody);
-
-        let data;
-        try {
-            data = JSON.parse(responseBody);
-        } catch (jsonError) {
-            console.error("❌ JSON Parse Error:", jsonError);
-            alert("Invalid JSON response from server.");
-            return;
-        }
+        // Parse response as JSON
+        const data = await response.json();
 
         if (!Array.isArray(data)) {
             console.error("❌ Unexpected response format:", data);
