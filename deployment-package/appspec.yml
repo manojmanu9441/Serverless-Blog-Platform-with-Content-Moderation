@@ -1,0 +1,18 @@
+version: 0.0
+Resources:
+  - myLambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: "AWSREKOGNITION"
+        Alias: "LIVE"
+        CurrentVersion: "1"
+        TargetVersion: "2"
+Hooks:
+  BeforeAllowTraffic:
+    - Location: "scripts/before-allow-traffic.sh"
+      Timeout: 180
+      RunAs: "root"
+  AfterAllowTraffic:
+    - Location: "scripts/after-allow-traffic.sh"
+      Timeout: 180
+      RunAs: "root"

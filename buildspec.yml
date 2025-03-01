@@ -3,17 +3,63 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: latest
+      python: 3.9  # Use Python 3.9 (or your preferred version)
+    commands:
+      - echo "Installing dependencies..."
+      - pip install awscli  # Install AWS CLI (if not already installed)
+
+  pre_build:
+    commands:
+      - echo "Preparing Lambda functions..."
+      - mkdir -p lambda  # Create a folder for Lambda functions (if it doesn't exist)
+
   build:
     commands:
-      - echo "Building website..."
+      - echo "Building website and Lambda functions..."
+      # Example: Package Python Lambda functions into .zip files
+      - cd lambda/AWSREKOGNITION
+      - zip -r ../AWSREKOGNITION.zip .  # Package the Lambda function
+      - cd ../..
+      - cd lambda/uploadBlog
+      - zip -r ../uploadBlog.zip .
+      - cd ../..
+      - cd lambda/getMyPosts
+      - zip -r ../getMyPosts.zip .
+      - cd ../..
+      - cd lambda/getBlogs
+      - zip -r ../getBlogs.zip .
+      - cd ../..
+      - cd lambda/INSERTLOGIN
+      - zip -r ../INSERTLOGIN.zip .
+      - cd ../..
+      - cd lambda/GETDETAILS
+      - zip -r ../GETDETAILS.zip .
+      - cd ../..
+
   post_build:
     commands:
       - echo "Deploying website to S3..."
-      - aws s3 sync . s3://www.manojconnects.space --delete
-      - echo "Website successfully deployed!"
+      # Sync static files (HTML, CSS, JS) to the root of the S3 bucket
+      - aws s3 sync . s3://www.manojconnects.space --exclude "lambda/*" --delete
+      - echo "Deploying Lambda functions to S3..."
+      # Upload Lambda .zip files to the lambda/ folder in the S3 bucket
+      - aws s3 cp lambda/AWSREKOGNITION.zip s3://www.manojconnects.space/lambda/AWSREKOGNITION.zip
+      - aws s3 cp lambda/uploadBlog.zip s3://www.manojconnects.space/lambda/uploadBlog.zip
+      - aws s3 cp lambda/getMyPosts.zip s3://www.manojconnects.space/lambda/getMyPosts.zip
+      - aws s3 cp lambda/getBlogs.zip s3://www.manojconnects.space/lambda/getBlogs.zip
+      - aws s3 cp lambda/INSERTLOGIN.zip s3://www.manojconnects.space/lambda/INSERTLOGIN.zip
+      - aws s3 cp lambda/GETDETAILS.zip s3://www.manojconnects.space/lambda/GETDETAILS.zip
+      - echo "Updating Lambda functions..."
+      # Update Lambda functions using the new .zip files
+      - aws lambda update-function-code --function-name AWSREKOGNITION --s3-bucket www.manojconnects.space --s3-key lambda/AWSREKOGNITION.zip
+      - aws lambda update-function-code --function-name uploadBlog --s3-bucket www.manojconnects.space --s3-key lambda/uploadBlog.zip
+      - aws lambda update-function-code --function-name getMyPosts --s3-bucket www.manojconnects.space --s3-key lambda/getMyPosts.zip
+      - aws lambda update-function-code --function-name getBlogs --s3-bucket www.manojconnects.space --s3-key lambda/getBlogs.zip
+      - aws lambda update-function-code --function-name INSERTLOGIN --s3-bucket www.manojconnects.space --s3-key lambda/INSERTLOGIN.zip
+      - aws lambda update-function-code --function-name GETDETAILS --s3-bucket www.manojconnects.space --s3-key lambda/GETDETAILS.zip
+      - echo "Deployment completed successfully!"
 
 artifacts:
   files:
-    - '**/*'
+    - '**/*'  # Include all files in the build directory
   base-directory: .
