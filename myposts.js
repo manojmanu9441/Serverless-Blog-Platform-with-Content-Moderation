@@ -1,8 +1,7 @@
 const apiUrl = "https://x0t22jrakh.execute-api.us-east-1.amazonaws.com/Prod";
 
 async function fetchMyPosts() {
-    // Get user ID from local storage
-    const userId = localStorage.getItem("userId");
+    const userId = localStorage.getItem("userId"); // Get user ID from local storage
 
     if (!userId) {
         console.error("❌ User ID is missing in local storage!");
@@ -33,6 +32,8 @@ async function fetchMyPosts() {
 
         // Parse response as JSON
         const data = await response.json();
+
+        console.log("📢 API Response Data:", data); // Debugging log
 
         if (!Array.isArray(data)) {
             console.error("❌ Unexpected response format:", data);
