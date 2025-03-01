@@ -14,9 +14,7 @@ async function fetchMyPosts() {
     try {
         const response = await fetch(requestUrl, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
+            headers: { "Content-Type": "application/json" }
         });
 
         console.log("📢 Response Status:", response.status);
@@ -27,12 +25,10 @@ async function fetchMyPosts() {
             return;
         }
 
-        // Parse response as JSON
         const data = await response.json();
         console.log("📢 API Response Data:", data);
 
-        // ✅ Fix: Extract the actual posts array from `data.body`
-        const posts = typeof data.body === "string" ? JSON.parse(data.body) : data.body;
+        const posts = data.body; // No JSON.parse required
 
         if (!Array.isArray(posts)) {
             console.error("❌ Unexpected response format:", posts);
@@ -40,8 +36,8 @@ async function fetchMyPosts() {
             return;
         }
 
-        // Display posts
         const myPostsList = document.getElementById("myPostsList");
+        console.log("📢 myPostsList Element:", myPostsList);
         myPostsList.innerHTML = "";
 
         if (posts.length === 0) {
@@ -50,6 +46,7 @@ async function fetchMyPosts() {
         }
 
         posts.forEach(post => {
+            console.log("📝 Rendering Post:", post);
             const li = document.createElement("li");
             li.innerHTML = `
                 <h3>${post.title}</h3>
@@ -65,3 +62,5 @@ async function fetchMyPosts() {
         alert("An error occurred while fetching posts.");
     }
 }
+
+// ✅ Ensure function runs after
