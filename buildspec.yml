@@ -3,51 +3,106 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.11  # Use Python 3.11 (or your preferred version)
+      python: 3.11
     commands:
       - echo "Installing dependencies..."
-      - pip install awscli  # Install AWS CLI (if not already installed)
+      - pip install awscli
 
   pre_build:
     commands:
       - echo "Preparing Lambda functions..."
-      - mkdir -p lambda  # Create a folder for Lambda functions (if it doesn't exist)
+      - mkdir -p lambda
+      - echo "Checking lambda directory contents:"
+      - ls -la lambda/
 
   build:
     commands:
       - echo "Building website and Lambda functions..."
       # Package AWSREKOGNITION file into a .zip archive
-      - cd lambda
-      - zip AWSREKOGNITION.zip AWSREKOGNITION  # Package the file directly
-      - cd uploadBlog
-      - zip -r ../uploadBlog.zip .  # Package the uploadBlog directory
-      - cd ..
-      - cd getMyPosts
-      - zip -r ../getMyPosts.zip .  # Package the getMyPosts directory
-      - cd ..
-      - cd getBlogs
-      - zip -r ../getBlogs.zip .  # Package the getBlogs directory
-      - cd ..
-      - cd INSERTLOGIN
-      - zip -r ../INSERTLOGIN.zip .  # Package the INSERTLOGIN directory
-      - cd ..
-      - cd GETDETAILS
-      - zip -r ../GETDETAILS.zip .  # Package the GETDETAILS directory
-      - cd ../..
+      - if [ -f lambda/AWSREKOGNITION ]; then
+          zip lambda/AWSREKOGNITION.zip lambda/AWSREKOGNITION
+        else
+          echo "Error: AWSREKOGNITION file not found!"
+          exit 1
+        fi
+      # Package uploadBlog file into a .zip archive
+      - if [ -f lambda/uploadBlog ]; then
+          zip lambda/uploadBlog.zip lambda/uploadBlog
+        else
+          echo "Error: uploadBlog file not found!"
+          exit 1
+        fi
+      # Package getMyPosts file into a .zip archive
+      - if [ -f lambda/getMyPosts ]; then
+          zip lambda/getMyPosts.zip lambda/getMyPosts
+        else
+          echo "Error: getMyPosts file not found!"
+          exit 1
+        fi
+      # Package getBlogs file into a .zip archive
+      - if [ -f lambda/getBlogs ]; then
+          zip lambda/getBlogs.zip lambda/getBlogs
+        else
+          echo "Error: getBlogs file not found!"
+          exit 1
+        fi
+      # Package INSERTLOGIN file into a .zip archive
+      - if [ -f lambda/INSERTLOGIN ]; then
+          zip lambda/INSERTLOGIN.zip lambda/INSERTLOGIN
+        else
+          echo "Error: INSERTLOGIN file not found!"
+          exit 1
+        fi
+      # Package GETDETAILS file into a .zip archive
+      - if [ -f lambda/GETDETAILS ]; then
+          zip lambda/GETDETAILS.zip lambda/GETDETAILS
+        else
+          echo "Error: GETDETAILS file not found!"
+          exit 1
+        fi
 
   post_build:
     commands:
       - echo "Deploying website to S3..."
-      # Sync static files (HTML, CSS, JS) to the root of the S3 bucket
       - aws s3 sync . s3://www.manojconnects.space --exclude "lambda/*" --delete
       - echo "Deploying Lambda functions to S3..."
       # Upload Lambda .zip files to the lambda/ folder in the S3 bucket
-      - aws s3 cp lambda/AWSREKOGNITION.zip s3://www.manojconnects.space/lambda/AWSREKOGNITION.zip
-      - aws s3 cp lambda/uploadBlog.zip s3://www.manojconnects.space/lambda/uploadBlog.zip
-      - aws s3 cp lambda/getMyPosts.zip s3://www.manojconnects.space/lambda/getMyPosts.zip
-      - aws s3 cp lambda/getBlogs.zip s3://www.manojconnects.space/lambda/getBlogs.zip
-      - aws s3 cp lambda/INSERTLOGIN.zip s3://www.manojconnects.space/lambda/INSERTLOGIN.zip
-      - aws s3 cp lambda/GETDETAILS.zip s3://www.manojconnects.space/lambda/GETDETAILS.zip
+      - if [ -f lambda/AWSREKOGNITION.zip ]; then
+          aws s3 cp lambda/AWSREKOGNITION.zip s3://www.manojconnects.space/lambda/AWSREKOGNITION.zip
+        else
+          echo "Error: AWSREKOGNITION.zip file not found!"
+          exit 1
+        fi
+      - if [ -f lambda/uploadBlog.zip ]; then
+          aws s3 cp lambda/uploadBlog.zip s3://www.manojconnects.space/lambda/uploadBlog.zip
+        else
+          echo "Error: uploadBlog.zip file not found!"
+          exit 1
+        fi
+      - if [ -f lambda/getMyPosts.zip ]; then
+          aws s3 cp lambda/getMyPosts.zip s3://www.manojconnects.space/lambda/getMyPosts.zip
+        else
+          echo "Error: getMyPosts.zip file not found!"
+          exit 1
+        fi
+      - if [ -f lambda/getBlogs.zip ]; then
+          aws s3 cp lambda/getBlogs.zip s3://www.manojconnects.space/lambda/getBlogs.zip
+        else
+          echo "Error: getBlogs.zip file not found!"
+          exit 1
+        fi
+      - if [ -f lambda/INSERTLOGIN.zip ]; then
+          aws s3 cp lambda/INSERTLOGIN.zip s3://www.manojconnects.space/lambda/INSERTLOGIN.zip
+        else
+          echo "Error: INSERTLOGIN.zip file not found!"
+          exit 1
+        fi
+      - if [ -f lambda/GETDETAILS.zip ]; then
+          aws s3 cp lambda/GETDETAILS.zip s3://www.manojconnects.space/lambda/GETDETAILS.zip
+        else
+          echo "Error: GETDETAILS.zip file not found!"
+          exit 1
+        fi
       - echo "Updating Lambda functions..."
       # Update Lambda functions using the new .zip files
       - aws lambda update-function-code --function-name AWSREKOGNITION --s3-bucket www.manojconnects.space --s3-key lambda/AWSREKOGNITION.zip
@@ -60,5 +115,5 @@ phases:
 
 artifacts:
   files:
-    - '**/*'  # Include all files in the build directory
+    - '**/*'
   base-directory: .
