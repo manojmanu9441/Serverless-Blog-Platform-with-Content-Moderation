@@ -32,7 +32,10 @@ async function fetchMyPosts() {
         }
 
         // Parse response as JSON
-        const data = await response.json();
+        const responseData = await response.json();
+
+        // Extract the body from the response
+        const data = JSON.parse(responseData.body);  // ✅ Parse the body
 
         if (!Array.isArray(data)) {
             console.error("❌ Unexpected response format:", data);
