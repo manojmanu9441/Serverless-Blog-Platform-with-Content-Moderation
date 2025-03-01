@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.11  # Use Python 3.9 (or your preferred version)
+      python: 3.11  # Use Python 3.11 (or your preferred version)
     commands:
       - echo "Installing dependencies..."
       - pip install awscli  # Install AWS CLI (if not already installed)
@@ -16,24 +16,23 @@ phases:
   build:
     commands:
       - echo "Building website and Lambda functions..."
-      # Example: Package Python Lambda functions into .zip files
-      - cd lambda/AWSREKOGNITION
-      - zip -r ../AWSREKOGNITION.zip .  # Package the Lambda function
-      - cd ../..
-      - cd lambda/uploadBlog
-      - zip -r ../uploadBlog.zip .
-      - cd ../..
-      - cd lambda/getMyPosts
-      - zip -r ../getMyPosts.zip .
-      - cd ../..
-      - cd lambda/getBlogs
-      - zip -r ../getBlogs.zip .
-      - cd ../..
-      - cd lambda/INSERTLOGIN
-      - zip -r ../INSERTLOGIN.zip .
-      - cd ../..
-      - cd lambda/GETDETAILS
-      - zip -r ../GETDETAILS.zip .
+      # Package AWSREKOGNITION file into a .zip archive
+      - cd lambda
+      - zip AWSREKOGNITION.zip AWSREKOGNITION  # Package the file directly
+      - cd uploadBlog
+      - zip -r ../uploadBlog.zip .  # Package the uploadBlog directory
+      - cd ..
+      - cd getMyPosts
+      - zip -r ../getMyPosts.zip .  # Package the getMyPosts directory
+      - cd ..
+      - cd getBlogs
+      - zip -r ../getBlogs.zip .  # Package the getBlogs directory
+      - cd ..
+      - cd INSERTLOGIN
+      - zip -r ../INSERTLOGIN.zip .  # Package the INSERTLOGIN directory
+      - cd ..
+      - cd GETDETAILS
+      - zip -r ../GETDETAILS.zip .  # Package the GETDETAILS directory
       - cd ../..
 
   post_build:
