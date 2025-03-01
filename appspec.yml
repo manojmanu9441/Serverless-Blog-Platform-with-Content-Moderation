@@ -1,17 +1,17 @@
 version: 0.0
 os: linux
 files:
-  - source: /lambda/AWSREKOGNITION.zip
+  - source: s3://www.manojconnects.space/lambda/AWSREKOGNITION.zip
     destination: /tmp/deployment-folder/AWSREKOGNITION.zip
-  - source: /lambda/uploadBlog.zip
+  - source: s3://www.manojconnects.space/lambda/uploadBlog.zip
     destination: /tmp/deployment-folder/uploadBlog.zip
-  - source: /lambda/getMyPosts.zip
+  - source: s3://www.manojconnects.space/lambda/getMyPosts.zip
     destination: /tmp/deployment-folder/getMyPosts.zip
-  - source: /lambda/getBlogs.zip
+  - source: s3://www.manojconnects.space/lambda/getBlogs.zip
     destination: /tmp/deployment-folder/getBlogs.zip
-  - source: /lambda/INSERTLOGIN.zip
+  - source: s3://www.manojconnects.space/lambda/INSERTLOGIN.zip
     destination: /tmp/deployment-folder/INSERTLOGIN.zip
-  - source: /lambda/GETDETAILS.zip
+  - source: s3://www.manojconnects.space/lambda/GETDETAILS.zip
     destination: /tmp/deployment-folder/GETDETAILS.zip
 
 hooks:
