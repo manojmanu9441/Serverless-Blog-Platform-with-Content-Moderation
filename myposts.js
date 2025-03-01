@@ -1,10 +1,13 @@
+const apiUrl = "https://x0t22jrakh.execute-api.us-east-1.amazonaws.com/Prod";
+
 async function fetchMyPosts() {
+    // Get user ID from local storage
     const userId = localStorage.getItem("userId");
 
     if (!userId) {
         console.error("❌ User ID is missing in local storage!");
         alert("User not logged in. Please log in to view your posts.");
-        window.location.href = "login.html";
+        window.location.href = "login.html"; // Redirect to login page
         return;
     }
 
@@ -14,39 +17,39 @@ async function fetchMyPosts() {
     try {
         const response = await fetch(requestUrl, {
             method: "GET",
-            headers: { "Content-Type": "application/json" }
+            headers: {
+                "Content-Type": "application/json"
+            }
         });
 
         console.log("📢 Response Status:", response.status);
 
+        // Check if response is successful
         if (!response.ok) {
             console.error(`❌ Error: ${response.status} ${response.statusText}`);
             alert(`Failed to fetch posts: ${response.statusText}`);
             return;
         }
 
+        // Parse response as JSON
         const data = await response.json();
-        console.log("📢 API Response Data:", data);
 
-        const posts = data.body; // No JSON.parse required
-
-        if (!Array.isArray(posts)) {
-            console.error("❌ Unexpected response format:", posts);
+        if (!Array.isArray(data)) {
+            console.error("❌ Unexpected response format:", data);
             alert("Unexpected response from the server.");
             return;
         }
 
+        // Display posts
         const myPostsList = document.getElementById("myPostsList");
-        console.log("📢 myPostsList Element:", myPostsList);
-        myPostsList.innerHTML = "";
+        myPostsList.innerHTML = ""; // Clear previous content
 
-        if (posts.length === 0) {
+        if (data.length === 0) {
             myPostsList.innerHTML = "<p>No posts found!</p>";
             return;
         }
 
-        posts.forEach(post => {
-            console.log("📝 Rendering Post:", post);
+        data.forEach(post => {
             const li = document.createElement("li");
             li.innerHTML = `
                 <h3>${post.title}</h3>
@@ -63,4 +66,8 @@ async function fetchMyPosts() {
     }
 }
 
-// ✅ Ensure function runs after
+// ✅ Ensure function runs after page fully loads
+window.onload = () => {
+    console.log("🚀 Page loaded, fetching posts...");
+    fetchMyPosts();
+};
