@@ -14,7 +14,7 @@ body {
 }
 
 .container {
-    background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+    background: rgba(198 166 166 / 90%); /* Semi-transparent white background */
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
